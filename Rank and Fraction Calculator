@@ -1,0 +1,167 @@
+/* James Valles
+   Assignment #2
+   CSC 471 iOS Development
+*/
+
+
+/* Problem 2a. Rank Function that returns index of key in array. If it does not appear return -1.
+*/
+func rank (a : Array<Int>, key: Int) -> Int {
+    var lo : Int  = 0
+    var hi : Int  = a.count - 1
+    var mid : Int
+    
+    while lo <= hi {
+        mid = lo + (hi - lo) / 2
+        if key < a[mid] {
+            hi = mid - 1
+        } else if key > a[mid]{
+            lo = mid + 1
+        } else {
+            return mid
+    }
+    }
+    return -1
+}
+
+
+/* Problem 2b. Create a sorted integer array and test Rank function. */
+
+//Test Array
+var inputArray : Array<Int> = [2,5,8,10,16,18,20]
+
+//Tests
+rank(a: inputArray , key: 18) //checking if 18 in array, returns index 5, pass
+rank(a: inputArray , key: 0)  //checking if 0 in array, return -1,  pass
+rank(a: inputArray , key: 3)  //checking if 3 in array, returns -1, passs
+rank(a: inputArray , key: -1) //checking if -1 in array, returns -1, pass
+rank(a: inputArray , key: 20) //checking if 20 in array, returns index 6, pass
+rank(a: inputArray , key: 21) //checking if 21 in array, returns -1, pass
+
+
+/* 3a. Expand on Fraction Class, add methods to compute -, *, %, + of fractions. Method takes fraction as parameter,
+ resulting in fraction with no common factors in its numerator and denominator. */
+
+//Class with CustomStringConvertible protocol.
+class Fraction: CustomStringConvertible{
+    var description: String {
+        get {
+            if denominator == 1 {
+                return "\(numerator)"
+            }
+            else {
+                return "\(numerator)/\(denominator)"
+            }
+        }
+    }
+    
+    //Properties.
+    var numerator : Int = 0
+    var denominator : Int = 1
+    
+    //Initializers.
+    init(_ numerator: Int, over denominator: Int){ //using anonymous external and local name
+        self.numerator = numerator
+        self.denominator = denominator
+    }
+    
+    //Default initializer.
+    init(){}
+    
+    //Setter.
+    func setTo(_ numerator: Int, over denominator: Int){
+        self.numerator = numerator
+        self.denominator = denominator
+    }
+    
+    //Reduce fractions by common factors.
+    func reduce(){
+        let sign = numerator >= 0 ? 1: -1
+        var u = numerator * sign
+        var v = denominator
+        var r: Int
+        
+        while v != 0 {
+            r = u % v; u = v; v = r
+        }
+        numerator /= u
+        denominator /= u
+    }
+    
+    //Add function.
+    func add(_ f: Fraction) -> Fraction {
+      let result: Fraction = Fraction()
+      result.numerator = numerator * f.denominator + denominator * f.numerator
+      result.denominator = denominator * f.denominator
+      result.reduce() //reduce result
+      return result
+    }
+    
+    //Subtract function.
+    func subtract(_ f: Fraction) -> Fraction {
+       let result: Fraction = Fraction() //initializing new fraction object
+       result.numerator = numerator * f.denominator - denominator * f.numerator
+       result.denominator = denominator * f.denominator
+       result.reduce() //reduce result
+       return result
+    }
+
+    
+    //Mutiply function.
+    func divide(_ f: Fraction) -> Fraction {
+        let result: Fraction = Fraction()
+        result.numerator = numerator * f.numerator
+        result.denominator = denominator * f.denominator
+        result.reduce()//reduce result
+        return result
+    }
+
+    
+    //Divide function.
+    func multiply(_ f: Fraction) -> Fraction {
+        let result: Fraction = Fraction()
+        result.numerator = numerator * f.denominator
+        result.denominator = denominator * f.numerator
+        result.reduce() //reduce result
+        return result
+    }
+    
+
+    // Method overloading of +, - *, /
+    
+    static func +(a:Fraction, b: Fraction) -> Fraction{
+        return a.add(b)
+    }
+    static func -(a:Fraction, b: Fraction) -> Fraction{
+        return a.subtract(b)
+    }
+    static func *(a:Fraction, b: Fraction) -> Fraction{
+        return a.divide(b)
+    }
+    static func /(a:Fraction, b: Fraction) -> Fraction{
+        return a.multiply(b)
+    }
+}
+
+/* 3b. Write test code to test each of the new methods of the class with different input values.  */
+
+//Creating Fractions to test
+let a = Fraction(5, over: 9)
+let b = Fraction(9, over: 9)
+let c = Fraction(9, over: 9)
+let d = Fraction(-3, over: 9)
+let e = Fraction(3, over: 1)
+let f = Fraction(-10, over: 1)
+let g = Fraction(6, over: 9)
+let h = Fraction(12, over: 23)
+
+//Testing fractions
+a + b  //test addition, pass
+a - b  //test subtraction, pass
+a / b  //test division, pass
+a * b  //test multiplication, pass
+b - a  //test subtraction, pass
+f - e  //test subtraction with negative numerator, passs
+g - h  //test subtraction with positive numerator, pass
+g + h  //test addition with possitive numerator, pass
+
